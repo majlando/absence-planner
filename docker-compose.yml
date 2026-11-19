@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: absence_planner
+      POSTGRES_USER: absence_planner
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set it in .env}
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  api:
+    build: ./api
+    environment:
+      ConnectionStrings__Default: "Host=db;Database=absence_planner;Username=absence_planner;Password=${POSTGRES_PASSWORD:?set it in .env}"
+    ports:
+      - "5000:8080"
+    depends_on:
+      - db
+
+  client:
+    build: ./client
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  db-data:
