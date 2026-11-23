@@ -24,9 +24,17 @@ builder.Services.AddOpenApiDocument(doc =>
 
 var app = builder.Build();
 
+// Set up the database: run migrations and create the first admin.
 // Tests can turn this off with the setting Migrate=false.
 if (app.Configuration.GetValue("Migrate", true))
+{
     await Migrator.RunAsync(connectionString);
+
+    using var scope = app.Services.CreateScope();
+    await scope.ServiceProvider.GetRequiredService<UserService>().CreateFirstAdminAsync(
+        app.Configuration["ADMIN_EMAIL"] ?? throw new InvalidOperationException("Missing ADMIN_EMAIL"),
+        app.Configuration["ADMIN_PASSWORD"] ?? throw new InvalidOperationException("Missing ADMIN_PASSWORD"));
+}
 
 app.UseOpenApi();
 app.UseSwaggerUi();
