@@ -11,7 +11,7 @@
  */
 
 export interface HealthResponse {
-  database?: boolean;
+  database: boolean;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -285,7 +285,7 @@ export class Api<
      * @request GET:/api/health
      */
     getApiHealth: (params: RequestParams = {}) =>
-      this.request<HealthResponse, any>({
+      this.request<HealthResponse, HealthResponse>({
         path: `/api/health`,
         method: "GET",
         format: "json",

@@ -8,10 +8,12 @@ public class ApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
     private readonly PostgreSqlContainer _db = new PostgreSqlBuilder("postgres:17-alpine").Build();
 
+    public string ConnectionString => _db.GetConnectionString();
+
     public Task InitializeAsync() => _db.StartAsync();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder) =>
-        builder.UseSetting("ConnectionStrings:Default", _db.GetConnectionString());
+        builder.UseSetting("ConnectionStrings:Default", ConnectionString);
 
     public new async Task DisposeAsync()
     {
