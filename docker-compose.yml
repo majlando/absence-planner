@@ -18,6 +18,8 @@ services:
     build: ./api
     environment:
       ConnectionStrings__Default: "Host=db;Database=absence_planner;Username=absence_planner;Password=${POSTGRES_PASSWORD:?set it in .env}"
+      ADMIN_EMAIL: ${ADMIN_EMAIL:?set it in .env}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set it in .env}
     ports:
       - "5000:8080"
     depends_on:

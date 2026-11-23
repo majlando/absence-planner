@@ -34,7 +34,10 @@ jobs:
     needs: [api, client]
     steps:
       - uses: actions/checkout@v4
-      - run: echo "POSTGRES_PASSWORD=$(openssl rand -hex 16)" > .env
+      - run: |
+          echo "POSTGRES_PASSWORD=$(openssl rand -hex 16)" >> .env
+          echo "ADMIN_EMAIL=admin@example.com" >> .env
+          echo "ADMIN_PASSWORD=$(openssl rand -hex 16)" >> .env
       - run: docker compose up --build -d
       - run: timeout 60 sh -c 'until curl -sf localhost:8080/api/health; do sleep 1; done'
       - uses: actions/setup-node@v4
