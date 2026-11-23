@@ -16,7 +16,7 @@ public class HealthRepository(AppDataConnection db) : IHealthRepository
         {
             return await db.ExecuteAsync<int>("SELECT 1") == 1;
         }
-        catch (Exception e) when (e is DbException or TimeoutException)
+        catch (DbException)
         {
             return false;
         }

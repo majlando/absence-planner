@@ -18,9 +18,10 @@ public class HealthTests(ApiFactory factory) : IClassFixture<ApiFactory>
     public async Task Database_is_unreachable()
     {
         var client = factory
-            .WithWebHostBuilder(b => b.UseSetting(
-                "ConnectionStrings:Default",
-                "Host=127.0.0.1;Port=1;Database=none;Username=none;Password=none;Timeout=2"))
+            .WithWebHostBuilder(b => b
+                .UseSetting("ConnectionStrings:Default",
+                    "Host=127.0.0.1;Port=1;Database=none;Username=none;Password=none;Timeout=2")
+                .UseSetting("Migrate", "false"))
             .CreateClient();
 
         var response = await client.GetAsync("/api/health");

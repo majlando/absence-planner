@@ -9,6 +9,10 @@ services:
       - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: pg_isready -h 127.0.0.1 -U absence_planner
+      interval: 2s
+      retries: 30
 
   api:
     build: ./api
@@ -17,7 +21,8 @@ services:
     ports:
       - "5000:8080"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   client:
     build: ./client
