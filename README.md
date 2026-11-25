@@ -28,9 +28,18 @@ Database changes: add a new SQL file to `api/Data/Migrations/`, e.g. `0001_emplo
 
 ## Security policies
 
+Login sets a cookie. Not logged in gives `401`, wrong role gives `403`.
+
 | Endpoint | Access |
 |---|---|
 | `GET /api/health` | Anyone |
+| `POST /api/auth/login` | Anyone |
+| `POST /api/auth/logout` | Logged in |
+| `GET /api/auth/me` | Logged in |
+| `GET /api/users` | Admin |
+| Everything else | Logged in |
+
+Roles: `Employee`, `Accounting`, `Admin`.
 
 ## Current state
 
