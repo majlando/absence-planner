@@ -1,5 +1,7 @@
 using Business;
 using Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using NJsonSchema;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +11,28 @@ var connectionString = builder.Configuration.GetConnectionString("Default")
 
 builder.Services.AddBusiness(connectionString);
 builder.Services.AddValidation();
+
+// Login with a cookie. The API answers 401/403 instead of redirecting to a login page.
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.Cookie.Name = "auth";
+        options.Cookie.SameSite = SameSiteMode.Strict;
+        options.Events.OnRedirectToLogin = context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        };
+        options.Events.OnRedirectToAccessDenied = context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return Task.CompletedTask;
+        };
+    });
+
+// Every endpoint needs login, unless it says AllowAnonymous.
+builder.Services.AddAuthorizationBuilder()
+    .SetFallbackPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddOpenApiDocument(doc =>
 {
@@ -39,6 +63,9 @@ if (app.Configuration.GetValue("Migrate", true))
 app.UseOpenApi();
 app.UseSwaggerUi();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapGet("/api/health", async (HealthService health) =>
     {
         var response = new HealthResponse(await health.IsDatabaseReachableAsync());
@@ -47,7 +74,11 @@ app.MapGet("/api/health", async (HealthService health) =>
             : Results.Json(response, statusCode: StatusCodes.Status503ServiceUnavailable);
     })
     .Produces<HealthResponse>()
-    .Produces<HealthResponse>(StatusCodes.Status503ServiceUnavailable);
+    .Produces<HealthResponse>(StatusCodes.Status503ServiceUnavailable)
+    .AllowAnonymous();
+
+app.MapAuthEndpoints();
+app.MapUserEndpoints();
 
 app.Run();
 
