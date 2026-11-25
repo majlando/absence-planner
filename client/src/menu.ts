@@ -1,0 +1,9 @@
+// The pages in the menu, and which roles may see them.
+export const menu = [
+  { to: '/', label: 'Home', roles: ['Employee', 'Accounting', 'Admin'] },
+  { to: '/users', label: 'Users', roles: ['Admin'] },
+]
+
+export function menuFor(role: string) {
+  return menu.filter((item) => item.roles.includes(role))
+}
