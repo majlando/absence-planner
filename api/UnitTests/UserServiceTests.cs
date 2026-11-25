@@ -23,10 +23,12 @@ public class UserServiceTests
         public Task<List<User>> GetAllAsync() => Task.FromResult(Users.ToList());
     }
 
-    private static FakeUserRepository RepositoryWith(bool active) => new()
+    private static FakeUserRepository RepositoryWith(bool active)
     {
-        Users = { new User { Email = "anna@example.com", PasswordHash = Passwords.Hash("secret123"), Active = active } },
-    };
+        var repository = new FakeUserRepository();
+        repository.Users.Add(new User { Email = "anna@example.com", PasswordHash = Passwords.Hash("secret123"), Active = active });
+        return repository;
+    }
 
     [Fact]
     public async Task Creates_admin_when_there_are_no_users()

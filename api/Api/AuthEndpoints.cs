@@ -39,10 +39,13 @@ public static class AuthEndpoints
             .Produces(StatusCodes.Status204NoContent);
 
         // Returns the logged-in user.
-        auth.MapGet("/me", (ClaimsPrincipal user) => new MeResponse(
-                Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!),
-                user.FindFirstValue(ClaimTypes.Email)!,
-                user.FindFirstValue(ClaimTypes.Role)!))
+        auth.MapGet("/me", (ClaimsPrincipal user) =>
+            {
+                var id = Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+                var email = user.FindFirstValue(ClaimTypes.Email)!;
+                var role = user.FindFirstValue(ClaimTypes.Role)!;
+                return new MeResponse(id, email, role);
+            })
             .Produces<MeResponse>();
     }
 }
