@@ -17,6 +17,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie(options =>
     {
         options.Cookie.Name = "auth";
+        // The browser only sends the cookie from our own site.
         options.Cookie.SameSite = SameSiteMode.Strict;
         options.Events.OnRedirectToLogin = context =>
         {
@@ -66,23 +67,11 @@ app.UseSwaggerUi();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapGet("/api/health", async (HealthService health) =>
-    {
-        var response = new HealthResponse(await health.IsDatabaseReachableAsync());
-        return response.Database
-            ? Results.Ok(response)
-            : Results.Json(response, statusCode: StatusCodes.Status503ServiceUnavailable);
-    })
-    .Produces<HealthResponse>()
-    .Produces<HealthResponse>(StatusCodes.Status503ServiceUnavailable)
-    .AllowAnonymous();
-
+app.MapHealthEndpoints();
 app.MapAuthEndpoints();
 app.MapUserEndpoints();
 
 app.Run();
-
-public record HealthResponse(bool Database);
 
 // Lets the integration tests start the API.
 public partial class Program;
