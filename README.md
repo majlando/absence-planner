@@ -46,7 +46,7 @@ Roles: `Employee`, `Accounting`, `Admin`.
 
 ## Current state
 
-Users, roles and login (API). Next: login page.
+Users, roles, login and logout. Admins can see the list of users.
 
 ## Testing strategy
 

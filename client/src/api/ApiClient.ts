@@ -14,6 +14,26 @@ export interface HealthResponse {
   database: boolean;
 }
 
+export interface UserResponse {
+  /** @format guid */
+  id: string;
+  email: string;
+  role: string;
+  active: boolean;
+}
+
+export interface MeResponse {
+  /** @format guid */
+  id: string;
+  email: string;
+  role: string;
+}
+
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
 
@@ -287,6 +307,63 @@ export class Api<
     getApiHealth: (params: RequestParams = {}) =>
       this.request<HealthResponse, HealthResponse>({
         path: `/api/health`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @name GetApiUsers
+     * @request GET:/api/users
+     */
+    getApiUsers: (params: RequestParams = {}) =>
+      this.request<UserResponse[], any>({
+        path: `/api/users`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @name PostApiAuthLogin
+     * @request POST:/api/auth/login
+     */
+    postApiAuthLogin: (data: LoginRequest, params: RequestParams = {}) =>
+      this.request<MeResponse, void>({
+        path: `/api/auth/login`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @name PostApiAuthLogout
+     * @request POST:/api/auth/logout
+     */
+    postApiAuthLogout: (params: RequestParams = {}) =>
+      this.request<void, any>({
+        path: `/api/auth/logout`,
+        method: "POST",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @name GetApiAuthMe
+     * @request GET:/api/auth/me
+     */
+    getApiAuthMe: (params: RequestParams = {}) =>
+      this.request<MeResponse, any>({
+        path: `/api/auth/me`,
         method: "GET",
         format: "json",
         ...params,
