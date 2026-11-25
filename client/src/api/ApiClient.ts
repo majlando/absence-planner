@@ -14,14 +14,6 @@ export interface HealthResponse {
   database: boolean;
 }
 
-export interface UserResponse {
-  /** @format guid */
-  id: string;
-  email: string;
-  role: string;
-  active: boolean;
-}
-
 export interface MeResponse {
   /** @format guid */
   id: string;
@@ -32,6 +24,46 @@ export interface MeResponse {
 export interface LoginRequest {
   email: string;
   password: string;
+}
+
+export type HttpValidationProblemDetails = ProblemDetails & {
+  errors?: Record<string, string[]>;
+  [key: string]: any;
+};
+
+export interface ProblemDetails {
+  type?: string | null;
+  title?: string | null;
+  /** @format int32 */
+  status?: number | null;
+  detail?: string | null;
+  instance?: string | null;
+  [key: string]: any;
+}
+
+export interface ChangePasswordRequest {
+  oldPassword: string;
+  newPassword: string;
+}
+
+export interface UserResponse {
+  /** @format guid */
+  id: string;
+  email: string;
+  role: string;
+  active: boolean;
+}
+
+export interface CreateUserRequest {
+  email: string;
+  password: string;
+  role: string;
+}
+
+export interface UpdateUserRequest {
+  email: string;
+  role: string;
+  active: boolean;
 }
 
 export type QueryParamsType = Record<string | number, any>;
@@ -315,20 +347,6 @@ export class Api<
     /**
      * No description
      *
-     * @name GetApiUsers
-     * @request GET:/api/users
-     */
-    getApiUsers: (params: RequestParams = {}) =>
-      this.request<UserResponse[], any>({
-        path: `/api/users`,
-        method: "GET",
-        format: "json",
-        ...params,
-      }),
-
-    /**
-     * No description
-     *
      * @name PostApiAuthLogin
      * @request POST:/api/auth/login
      */
@@ -366,6 +384,86 @@ export class Api<
         path: `/api/auth/me`,
         method: "GET",
         format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @name PostApiAuthPassword
+     * @request POST:/api/auth/password
+     */
+    postApiAuthPassword: (
+      data: ChangePasswordRequest,
+      params: RequestParams = {},
+    ) =>
+      this.request<void, HttpValidationProblemDetails>({
+        path: `/api/auth/password`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @name GetApiUsersAll
+     * @request GET:/api/users
+     */
+    getApiUsersAll: (params: RequestParams = {}) =>
+      this.request<UserResponse[], any>({
+        path: `/api/users`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @name PostApiUsers
+     * @request POST:/api/users
+     */
+    postApiUsers: (data: CreateUserRequest, params: RequestParams = {}) =>
+      this.request<void, HttpValidationProblemDetails>({
+        path: `/api/users`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @name GetApiUsers
+     * @request GET:/api/users/{id}
+     */
+    getApiUsers: (id: string, params: RequestParams = {}) =>
+      this.request<UserResponse, void>({
+        path: `/api/users/${id}`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @name PutApiUsers
+     * @request PUT:/api/users/{id}
+     */
+    putApiUsers: (
+      id: string,
+      data: UpdateUserRequest,
+      params: RequestParams = {},
+    ) =>
+      this.request<void, HttpValidationProblemDetails>({
+        path: `/api/users/${id}`,
+        method: "PUT",
+        body: data,
+        type: ContentType.Json,
         ...params,
       }),
   };
