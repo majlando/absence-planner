@@ -2,6 +2,7 @@
 export const menu = [
   { to: '/', label: 'Home', roles: ['Employee', 'Accounting', 'Admin'] },
   { to: '/users', label: 'Users', roles: ['Admin'] },
+  { to: '/password', label: 'Change password', roles: ['Employee', 'Accounting', 'Admin'] },
 ]
 
 export function menuFor(role: string) {

@@ -39,14 +39,16 @@ Login sets a cookie. Not logged in gives `401`, wrong role gives `403`.
 | `POST /api/auth/login` | Anyone |
 | `POST /api/auth/logout` | Logged in |
 | `GET /api/auth/me` | Logged in |
-| `GET /api/users` | Admin |
+| `POST /api/auth/password` (own password) | Logged in |
+| `GET /api/users`, `GET /api/users/{id}` | Admin |
+| `POST /api/users`, `PUT /api/users/{id}` | Admin |
 | Everything else | Logged in |
 
-Roles: `Employee`, `Accounting`, `Admin`.
+Roles: `Employee`, `Accounting`, `Admin`. Deactivated users can't log in. An admin can't deactivate themselves or remove their own admin role.
 
 ## Current state
 
-Users, roles, login and logout. Admins can see the list of users.
+Users, roles, login and logout. Admins can create, edit and deactivate users. Everyone can change their own password.
 
 ## Testing strategy
 
