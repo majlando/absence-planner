@@ -9,5 +9,6 @@ public static class DependencyInjection
         .AddData(connectionString)
         .AddScoped<HealthService>()
         .AddScoped<UserService>()
-        .AddScoped<RuleService>();
+        .AddScoped<RuleService>()
+        .AddScoped<CalendarService>();
 }

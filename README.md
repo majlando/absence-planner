@@ -43,6 +43,8 @@ Login sets a cookie. Not logged in gives `401`, wrong role gives `403`.
 | `GET /api/users`, `GET /api/users/{id}` | Admin |
 | `POST /api/users`, `PUT /api/users/{id}` | Admin |
 | `GET /api/rules` | Admin |
+| `GET /api/calendar/{year}` (days off) | Logged in |
+| `POST /api/calendar/company-days`, `DELETE /api/calendar/company-days/{id}` | Admin |
 | Everything else | Logged in |
 
 Roles: `Employee`, `Accounting`, `Admin`. Deactivated users are logged out and can't log in. Users whose role changes must log in again. An admin can't deactivate themselves or remove their own admin role.
