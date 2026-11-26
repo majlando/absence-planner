@@ -64,9 +64,10 @@ public static class AuthEndpoints
     // Runs on every request with a cookie. Deactivated users and users with a new role must log in again.
     public static async Task CheckUserAsync(CookieValidatePrincipalContext context)
     {
+        var me = context.Principal!;
         var users = context.HttpContext.RequestServices.GetRequiredService<UserService>();
-        var user = await users.GetAsync(context.Principal!.UserId());
-        if (user is null || !user.Active || user.Role != context.Principal.FindFirstValue(ClaimTypes.Role))
+        var user = await users.GetAsync(me.UserId());
+        if (user is null || !user.Active || user.Role != me.FindFirstValue(ClaimTypes.Role))
         {
             context.RejectPrincipal();
             await context.HttpContext.SignOutAsync();
