@@ -59,6 +59,32 @@ public class UserManagementTests(ApiFactory factory) : IClassFixture<ApiFactory>
     }
 
     [Fact]
+    public async Task Deactivated_user_is_logged_out()
+    {
+        var admin = await factory.LoginAsAdminAsync();
+        var id = await CreateUserAsync(admin, "gone@example.com");
+        var user = await factory.LoginAsync("gone@example.com", "secret123");
+
+        await admin.PutAsJsonAsync($"/api/users/{id}", new UpdateUserRequest("gone@example.com", Roles.Employee, false));
+        var response = await user.GetAsync("/api/auth/me");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
+    public async Task User_with_changed_role_is_logged_out()
+    {
+        var admin = await factory.LoginAsAdminAsync();
+        var id = await CreateUserAsync(admin, "promoted@example.com");
+        var user = await factory.LoginAsync("promoted@example.com", "secret123");
+
+        await admin.PutAsJsonAsync($"/api/users/{id}", new UpdateUserRequest("promoted@example.com", Roles.Accounting, true));
+        var response = await user.GetAsync("/api/auth/me");
+
+        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+    }
+
+    [Fact]
     public async Task Employee_cannot_create_users()
     {
         var admin = await factory.LoginAsAdminAsync();
@@ -84,5 +110,13 @@ public class UserManagementTests(ApiFactory factory) : IClassFixture<ApiFactory>
         Assert.Equal(HttpStatusCode.BadRequest, wrong.StatusCode);
         Assert.Equal(HttpStatusCode.NoContent, right.StatusCode);
         await factory.LoginAsync("pw@example.com", "new-secret");
+    }
+
+    // Creates an employee with the password "secret123" and returns the id.
+    private static async Task<Guid> CreateUserAsync(HttpClient admin, string email)
+    {
+        await admin.PostAsJsonAsync("/api/users", new CreateUserRequest(email, "secret123", Roles.Employee));
+        var users = await admin.GetFromJsonAsync<List<UserResponse>>("/api/users");
+        return users!.Single(u => u.Email == email).Id;
     }
 }
