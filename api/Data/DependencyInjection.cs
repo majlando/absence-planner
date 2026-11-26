@@ -8,5 +8,6 @@ public static class DependencyInjection
         .AddScoped(_ => new AppDataConnection(connectionString))
         .AddScoped<IHealthRepository, HealthRepository>()
         .AddScoped<IUserRepository, UserRepository>()
-        .AddScoped<IRuleRepository, RuleRepository>();
+        .AddScoped<IRuleRepository, RuleRepository>()
+        .AddScoped<ICompanyDayRepository, CompanyDayRepository>();
 }

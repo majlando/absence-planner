@@ -72,6 +72,7 @@ app.MapHealthEndpoints();
 app.MapAuthEndpoints();
 app.MapUserEndpoints();
 app.MapRuleEndpoints();
+app.MapCalendarEndpoints();
 
 app.Run();
 

@@ -66,6 +66,30 @@ export interface UpdateUserRequest {
   active: boolean;
 }
 
+export interface RuleResponse {
+  /** @format guid */
+  id: string;
+  name: string;
+  /** @format decimal */
+  value: number;
+  /** @format date */
+  startDate: string;
+}
+
+export interface DayOffResponse {
+  /** @format date */
+  date: string;
+  name: string;
+  /** @format guid */
+  companyDayId?: string | null;
+}
+
+export interface CompanyDayRequest {
+  /** @format date */
+  date: string;
+  name: string;
+}
+
 export type QueryParamsType = Record<string | number, any>;
 export type ResponseFormat = keyof Omit<Body, "body" | "bodyUsed">;
 
@@ -464,6 +488,65 @@ export class Api<
         method: "PUT",
         body: data,
         type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @name GetApiRules
+     * @request GET:/api/rules
+     */
+    getApiRules: (params: RequestParams = {}) =>
+      this.request<RuleResponse[], any>({
+        path: `/api/rules`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @name GetApiCalendar
+     * @request GET:/api/calendar/{year}
+     */
+    getApiCalendar: (year: number, params: RequestParams = {}) =>
+      this.request<DayOffResponse[], any>({
+        path: `/api/calendar/${year}`,
+        method: "GET",
+        format: "json",
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @name PostApiCalendarCompanyDays
+     * @request POST:/api/calendar/company-days
+     */
+    postApiCalendarCompanyDays: (
+      data: CompanyDayRequest,
+      params: RequestParams = {},
+    ) =>
+      this.request<void, HttpValidationProblemDetails>({
+        path: `/api/calendar/company-days`,
+        method: "POST",
+        body: data,
+        type: ContentType.Json,
+        ...params,
+      }),
+
+    /**
+     * No description
+     *
+     * @name DeleteApiCalendarCompanyDays
+     * @request DELETE:/api/calendar/company-days/{id}
+     */
+    deleteApiCalendarCompanyDays: (id: string, params: RequestParams = {}) =>
+      this.request<void, void>({
+        path: `/api/calendar/company-days/${id}`,
+        method: "DELETE",
         ...params,
       }),
   };
