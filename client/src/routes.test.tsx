@@ -3,9 +3,16 @@ import { createMemoryRouter, RouterProvider } from 'react-router'
 import { afterEach, expect, test, vi } from 'vitest'
 import { routes } from './routes.tsx'
 
-// Every call to the API answers 401 (not logged in / wrong password).
-function apiAnswers401() {
-  vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null, { status: 401 }))
+// Every call to the API answers with this status, e.g. 401 (not logged in / wrong password).
+function apiAnswers(status: number) {
+  vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null, { status }))
+}
+
+function logIn() {
+  render(<RouterProvider router={createMemoryRouter(routes, { initialEntries: ['/login'] })} />)
+  fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'anna@example.com' } })
+  fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'wrong' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Log in' }))
 }
 
 afterEach(() => {
@@ -14,7 +21,7 @@ afterEach(() => {
 })
 
 test('not logged in is sent to the login page', async () => {
-  apiAnswers401()
+  apiAnswers(401)
 
   render(<RouterProvider router={createMemoryRouter(routes)} />)
 
@@ -22,12 +29,17 @@ test('not logged in is sent to the login page', async () => {
 })
 
 test('wrong password shows an error', async () => {
-  apiAnswers401()
-  render(<RouterProvider router={createMemoryRouter(routes, { initialEntries: ['/login'] })} />)
+  apiAnswers(401)
 
-  fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'anna@example.com' } })
-  fireEvent.change(screen.getByLabelText('Password'), { target: { value: 'wrong' } })
-  fireEvent.click(screen.getByRole('button', { name: 'Log in' }))
+  logIn()
 
   expect((await screen.findByRole('alert')).textContent).toBe('Wrong email or password')
+})
+
+test('server error during login shows a general error', async () => {
+  apiAnswers(500)
+
+  logIn()
+
+  expect((await screen.findByRole('alert')).textContent).toBe('Something went wrong')
 })

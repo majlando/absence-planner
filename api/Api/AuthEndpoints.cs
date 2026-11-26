@@ -60,9 +60,22 @@ public static class AuthEndpoints
     // The id of the logged-in user, saved in the cookie at login.
     public static Guid UserId(this ClaimsPrincipal user) =>
         Guid.Parse(user.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+    // Runs on every request with a cookie. Deactivated users and users with a new role must log in again.
+    public static async Task CheckUserAsync(CookieValidatePrincipalContext context)
+    {
+        var me = context.Principal!;
+        var users = context.HttpContext.RequestServices.GetRequiredService<UserService>();
+        var user = await users.GetAsync(me.UserId());
+        if (user is null || !user.Active || user.Role != me.FindFirstValue(ClaimTypes.Role))
+        {
+            context.RejectPrincipal();
+            await context.HttpContext.SignOutAsync();
+        }
+    }
 }
 
-public record LoginRequest(string Email, string Password);
+public record LoginRequest([Required] string Email, [Required] string Password);
 
 public record ChangePasswordRequest([Required] string OldPassword, [Required, MinLength(8)] string NewPassword);
 

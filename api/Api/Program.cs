@@ -19,6 +19,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.Cookie.Name = "auth";
         // The browser only sends the cookie from our own site.
         options.Cookie.SameSite = SameSiteMode.Strict;
+        options.Events.OnValidatePrincipal = AuthEndpoints.CheckUserAsync;
         options.Events.OnRedirectToLogin = context =>
         {
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;

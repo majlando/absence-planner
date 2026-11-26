@@ -24,6 +24,14 @@ public class AuthTests(ApiFactory factory) : IClassFixture<ApiFactory>
     }
 
     [Fact]
+    public async Task Login_without_email_and_password_gives_400()
+    {
+        var response = await factory.NewClient().PostAsJsonAsync("/api/auth/login", new { });
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+    }
+
+    [Fact]
     public async Task Login_then_me_returns_the_user()
     {
         var client = await factory.LoginAsAdminAsync();

@@ -9,8 +9,9 @@ export async function loginAction({ request }: ActionFunctionArgs) {
       email: String(form.get('email')),
       password: String(form.get('password')),
     })
-  } catch {
-    return { error: 'Wrong email or password' }
+  } catch (failed) {
+    const wrongLogin = failed instanceof Response && failed.status === 401
+    return { error: wrongLogin ? 'Wrong email or password' : 'Something went wrong' }
   }
   return redirect('/')
 }
