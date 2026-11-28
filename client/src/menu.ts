@@ -2,6 +2,8 @@
 export const menu = [
   { to: '/', label: 'Home', roles: ['Employee', 'Accounting', 'Admin'] },
   { to: '/users', label: 'Users', roles: ['Admin'] },
+  { to: '/rules', label: 'Rules', roles: ['Admin'] },
+  { to: '/calendar', label: 'Calendar', roles: ['Admin'] },
   { to: '/password', label: 'Change password', roles: ['Employee', 'Accounting', 'Admin'] },
 ]
 
