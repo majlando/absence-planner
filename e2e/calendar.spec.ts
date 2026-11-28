@@ -16,8 +16,8 @@ test('admin sees the rules and adds and removes a company day off', async ({ pag
   await page.getByLabel('Date').fill('2099-12-24')
   await page.getByLabel('Name').fill('Christmas Eve')
   await page.getByRole('button', { name: 'Add' }).click()
-  await expect(page.getByRole('cell', { name: 'Christmas Eve' })).toBeVisible()
+  await expect(page.getByRole('cell', { name: 'Christmas Eve', exact: true })).toBeVisible()
 
   await page.getByRole('button', { name: 'Remove Christmas Eve' }).click()
-  await expect(page.getByRole('cell', { name: 'Christmas Eve' })).toHaveCount(0)
+  await expect(page.getByRole('cell', { name: 'Christmas Eve', exact: true })).toHaveCount(0)
 })
